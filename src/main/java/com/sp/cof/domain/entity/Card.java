@@ -1,0 +1,85 @@
+package com.sp.cof.domain.entity;
+
+import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import static com.sp.cof.domain.entity.CardElement.*;
+import static com.sp.cof.domain.entity.CardRank.*;
+
+@Slf4j
+@Getter
+@RequiredArgsConstructor
+public enum Card {
+
+    // LUNARIA 1 ~ 13
+    LUNARIA_ONE(101, LUNARIA, ONE),
+    LUNARIA_TWO(102, LUNARIA, TWO),
+    LUNARIA_THREE(103, LUNARIA, THREE),
+    LUNARIA_FOUR(104, LUNARIA, FOUR),
+    LUNARIA_FIVE(105, LUNARIA, FIVE),
+    LUNARIA_SIX(106, LUNARIA, SIX),
+    LUNARIA_SEVEN(107, LUNARIA, SEVEN),
+    LUNARIA_EIGHT(108, LUNARIA, EIGHT),
+    LUNARIA_NINE(109, LUNARIA, NINE),
+    LUNARIA_TEN(110, LUNARIA, TEN),
+    LUNARIA_THREAD(111, LUNARIA, THREAD),
+    LUNARIA_WEAVER(112, LUNARIA, WEAVER),
+    LUNARIA_FATE(113, LUNARIA, FATE),
+
+    // NOCTIS 1 ~ 13
+    NOCTIS_ONE(201, NOCTIS, ONE),
+    NOCTIS_TWO(202, NOCTIS, TWO),
+    NOCTIS_THREE(203, NOCTIS, THREE),
+    NOCTIS_FOUR(204, NOCTIS, FOUR),
+    NOCTIS_FIVE(205, NOCTIS, FIVE),
+    NOCTIS_SIX(206, NOCTIS, SIX),
+    NOCTIS_SEVEN(207, NOCTIS, SEVEN),
+    NOCTIS_EIGHT(208, NOCTIS, EIGHT),
+    NOCTIS_NINE(209, NOCTIS, NINE),
+    NOCTIS_TEN(210, NOCTIS, TEN),
+    NOCTIS_THREAD(211, NOCTIS, THREAD),
+    NOCTIS_WEAVER(212, NOCTIS, WEAVER),
+    NOCTIS_FATE(213, NOCTIS, FATE),
+
+    // FORTUNA 1 ~ 13
+    FORTUNA_ONE(301, FORTUNA, ONE),
+    FORTUNA_TWO(302, FORTUNA, TWO),
+    FORTUNA_THREE(303, FORTUNA, THREE),
+    FORTUNA_FOUR(304, FORTUNA, FOUR),
+    FORTUNA_FIVE(305, FORTUNA, FIVE),
+    FORTUNA_SIX(306, FORTUNA, SIX),
+    FORTUNA_SEVEN(307, FORTUNA, SEVEN),
+    FORTUNA_EIGHT(308, FORTUNA, EIGHT),
+    FORTUNA_NINE(309, FORTUNA, NINE),
+    FORTUNA_TEN(310, FORTUNA, TEN),
+    FORTUNA_THREAD(311, FORTUNA, THREAD),
+    FORTUNA_WEAVER(312, FORTUNA, WEAVER),
+    FORTUNA_FATE(313, FORTUNA, FATE),
+
+    // IGNIS 1 ~ 13
+    IGNIS_ONE(401, IGNIS, ONE),
+    IGNIS_TWO(402, IGNIS, TWO),
+    IGNIS_THREE(403, IGNIS, THREE),
+    IGNIS_FOUR(404, IGNIS, FOUR),
+    IGNIS_FIVE(405, IGNIS, FIVE),
+    IGNIS_SIX(406, IGNIS, SIX),
+    IGNIS_SEVEN(407, IGNIS, SEVEN),
+    IGNIS_EIGHT(408, IGNIS, EIGHT),
+    IGNIS_NINE(409, IGNIS, NINE),
+    IGNIS_TEN(410, IGNIS, TEN),
+    IGNIS_THREAD(411, IGNIS, THREAD),
+    IGNIS_WEAVER(412, IGNIS, WEAVER),
+    IGNIS_FATE(413, IGNIS, FATE);
+
+    private final int value;
+    private final CardElement element;
+    private final CardRank rank;
+
+    @JsonValue
+    @Override
+    public String toString() {
+        return element.getCode() + "_" + rank.getCode();
+    }
+}
