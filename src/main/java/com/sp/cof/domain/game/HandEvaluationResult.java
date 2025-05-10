@@ -1,7 +1,7 @@
-package com.sp.cof.domain.record;
+package com.sp.cof.domain.game;
 
-import com.sp.cof.domain.entity.Card;
-import com.sp.cof.domain.entity.HandRank;
+import com.sp.cof.domain.card.Card;
+import com.sp.cof.domain.card.HandRank;
 
 import java.util.List;
 

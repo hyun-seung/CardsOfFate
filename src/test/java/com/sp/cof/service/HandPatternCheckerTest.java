@@ -1,6 +1,6 @@
 package com.sp.cof.service;
 
-import com.sp.cof.domain.entity.Card;
+import com.sp.cof.domain.card.Card;
 import com.sp.cof.service.patternchecker.*;
 import org.junit.jupiter.api.Test;
 

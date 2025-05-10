@@ -1,7 +1,7 @@
 package com.sp.cof.service.patternchecker;
 
-import com.sp.cof.domain.entity.Card;
-import com.sp.cof.domain.entity.HandRank;
+import com.sp.cof.domain.card.Card;
+import com.sp.cof.domain.card.HandRank;
 import com.sp.cof.service.HandPatternChecker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

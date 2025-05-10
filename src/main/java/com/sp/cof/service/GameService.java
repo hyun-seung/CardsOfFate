@@ -2,8 +2,8 @@ package com.sp.cof.service;
 
 import com.sp.cof.common.Constant;
 import com.sp.cof.domain.Deck;
-import com.sp.cof.domain.record.GameInfo;
-import com.sp.cof.domain.entity.Card;
+import com.sp.cof.domain.game.GameInfo;
+import com.sp.cof.domain.card.Card;
 import com.sp.cof.repository.DeckRepository;
 import com.sp.cof.repository.InMemoryDeckRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +24,15 @@ public class GameService {
     }
 
     public GameInfo startGame(String gameId, long seed) {
+        List<Card> hand = createDeckAndHand(gameId, seed);
+
+        GameState
+
+
+        return new GameInfo(gameId, hand);
+    }
+
+    private List<Card> createDeckAndHand(String gameId, long seed) {
         Deck deck = new Deck(seed);
 
         List<Card> hand = new ArrayList<>();
@@ -32,7 +41,7 @@ public class GameService {
         }
 
         deckRepository.save(gameId, deck);
-        return new GameInfo(gameId, hand);
+        return hand;
     }
 
     public GameInfo getGameInfo(String gameId) {

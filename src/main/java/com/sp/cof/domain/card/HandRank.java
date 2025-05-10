@@ -1,4 +1,4 @@
-package com.sp.cof.domain.entity;
+package com.sp.cof.domain.card;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

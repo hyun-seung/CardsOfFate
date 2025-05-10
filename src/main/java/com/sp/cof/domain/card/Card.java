@@ -1,12 +1,12 @@
-package com.sp.cof.domain.entity;
+package com.sp.cof.domain.card;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.sp.cof.domain.entity.CardElement.*;
-import static com.sp.cof.domain.entity.CardRank.*;
+import static com.sp.cof.domain.card.CardElement.*;
+import static com.sp.cof.domain.card.CardRank.*;
 
 @Slf4j
 @Getter

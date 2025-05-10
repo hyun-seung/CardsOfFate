@@ -1,6 +1,6 @@
 package com.sp.cof.controller;
 
-import com.sp.cof.domain.record.GameInfo;
+import com.sp.cof.domain.game.GameInfo;
 import com.sp.cof.service.GameService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
