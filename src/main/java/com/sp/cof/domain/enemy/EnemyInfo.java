@@ -12,17 +12,18 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public enum EnemyInfo {
 
-    ROUND_1(3, 4, 300),
-    ROUND_2(3, 5, 600),
-    ROUND_3(2, 6, 1_000),
-    ROUND_4(2, 7, 1_500),
-    ROUND_5(2, 8, 2_000),
-    ROUND_6(1, 9, 2_600),
-    ROUND_7(1, 9, 3_200),
-    ROUND_8(1, 10, 3_800),
-    ROUND_9(1, 10, 4_400),
-    ROUND_10(1, 12, 5_000);
+    ROUND_1(1, 3, 4, 300),
+    ROUND_2(2, 3, 5, 600),
+    ROUND_3(3, 2, 6, 1_000),
+    ROUND_4(4, 2, 7, 1_500),
+    ROUND_5(5, 2, 8, 2_000),
+    ROUND_6(6, 1, 9, 2_600),
+    ROUND_7(7, 1, 9, 3_200),
+    ROUND_8(8, 1, 10, 3_800),
+    ROUND_9(9, 1, 10, 4_400),
+    ROUND_10(10, 1, 12, 5_000);
 
+    private final int round;
     private final int trunsUntilAttack;
     private final int attackPower;
     private final int hp;

@@ -40,4 +40,12 @@ public class Deck {
     public boolean isEmpty() {
         return cards.isEmpty();
     }
+
+    @Override
+    public String toString() {
+        return "Deck{" +
+                "cards=" + cards +
+                ", drawnCards=" + drawnCards +
+                '}';
+    }
 }

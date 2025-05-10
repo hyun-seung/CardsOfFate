@@ -1,6 +1,7 @@
 package com.sp.cof.controller;
 
-import com.sp.cof.domain.game.GameInfo;
+import com.sp.cof.domain.game.GameInfoDto;
+import com.sp.cof.domain.game.GameStatusDto;
 import com.sp.cof.service.GameService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,18 +20,18 @@ public class GameController {
     private final GameService gameService;
 
     @PostMapping("/start")
-    public ResponseEntity<GameInfo> gameStart() {
+    public ResponseEntity<GameStatusDto> gameStart() {
         String gameId = UUID.randomUUID().toString();
         long seed = Instant.now().toEpochMilli();
         log.info("[{}] Game Start! Seed = {}", gameId, seed);
 
-        GameInfo gameInfo = gameService.startGame(gameId, seed);
-        return ResponseEntity.ok(gameInfo);
+        GameStatusDto gameStatusDto = gameService.startGame(gameId, seed);
+        return ResponseEntity.ok(gameStatusDto);
     }
 
     @GetMapping("/{gameId}")
-    public ResponseEntity<GameInfo> getGameInfo(@PathVariable String gameId) {
-        GameInfo gameInfo = gameService.getGameInfo(gameId);
-        return ResponseEntity.ok(gameInfo);
+    public ResponseEntity<GameInfoDto> getGameInfo(@PathVariable String gameId) {
+        GameInfoDto gameInfoDto = gameService.getGameInfo(gameId);
+        return ResponseEntity.ok(gameInfoDto);
     }
 }
