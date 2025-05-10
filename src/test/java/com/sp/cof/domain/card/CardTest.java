@@ -1,6 +1,6 @@
-package com.sp.cof.domain.entity;
+package com.sp.cof.domain.card;
 
-import org.junit.jupiter.api.Disabled;
+import com.sp.cof.domain.card.Card;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

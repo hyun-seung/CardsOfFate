@@ -1,4 +1,4 @@
-package com.sp.cof.service;
+package com.sp.cof.service.hand;
 
 import com.sp.cof.domain.card.Card;
 import com.sp.cof.domain.card.HandRank;

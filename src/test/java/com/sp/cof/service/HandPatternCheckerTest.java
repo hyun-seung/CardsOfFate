@@ -1,7 +1,8 @@
 package com.sp.cof.service;
 
 import com.sp.cof.domain.card.Card;
-import com.sp.cof.service.patternchecker.*;
+import com.sp.cof.service.hand.HandPatternChecker;
+import com.sp.cof.service.hand.patternchecker.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

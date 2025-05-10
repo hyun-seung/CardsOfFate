@@ -1,4 +1,4 @@
-package com.sp.cof.repository;
+package com.sp.cof.repository.deck;
 
 import com.sp.cof.domain.Deck;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +20,22 @@ public class InMemoryDeckRepository implements DeckRepository {
     @Override
     public void save(String gameId, Deck deck) {
         storage.put(gameId, deck);
+        print();
     }
 
     @Override
     public Deck findById(String gameId) {
         return storage.get(gameId);
+    }
+
+    private void print() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n").append("=== [Deck Repository] ===").append("\n");
+        storage.forEach((gameId, deck) -> {
+            sb.append("gameId : ").append(gameId).append(" / ");
+            sb.append("Deck : ").append(deck.toString());
+            sb.append("\n");
+        });
+        log.info(sb.toString());
     }
 }

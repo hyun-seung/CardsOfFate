@@ -1,8 +1,8 @@
-package com.sp.cof.service.patternchecker;
+package com.sp.cof.service.hand.patternchecker;
 
 import com.sp.cof.domain.card.Card;
 import com.sp.cof.domain.card.HandRank;
-import com.sp.cof.service.HandPatternChecker;
+import com.sp.cof.service.hand.HandPatternChecker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class OnePairChecker implements HandPatternChecker {
+public class TwoPairChecker implements HandPatternChecker {
 
     @Override
     public boolean matches(List<Card> hand) {
@@ -20,11 +20,11 @@ public class OnePairChecker implements HandPatternChecker {
                 .values()
                 .stream()
                 .filter(count -> count == 2L).count();
-        return pairCount == 1;
+        return pairCount == 2;
     }
 
     @Override
     public HandRank getRank() {
-        return HandRank.ONE_PAIR;
+        return HandRank.TWO_PAIR;
     }
 }

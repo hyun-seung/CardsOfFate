@@ -1,8 +1,8 @@
-package com.sp.cof.service.patternchecker;
+package com.sp.cof.service.hand.patternchecker;
 
 import com.sp.cof.domain.card.Card;
 import com.sp.cof.domain.card.HandRank;
-import com.sp.cof.service.HandPatternChecker;
+import com.sp.cof.service.hand.HandPatternChecker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

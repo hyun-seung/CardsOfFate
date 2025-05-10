@@ -2,6 +2,7 @@ package com.sp.cof.service;
 
 import com.sp.cof.domain.card.Card;
 import com.sp.cof.domain.card.HandRank;
+import com.sp.cof.service.hand.HandEvaluator;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
