@@ -9,6 +9,7 @@ import java.util.*;
 public class Deck {
 
     private final Deque<Card> cards;
+    private final List<Card> drawnCards = new ArrayList<>();
 
     public Deck(long seed) {
         this.cards = createShuffledDeck(seed);
@@ -21,7 +22,15 @@ public class Deck {
     }
 
     public Card draw() {
-        return cards.pollFirst();
+        Card card = cards.pollFirst();
+        if (Objects.nonNull(card)) {
+            drawnCards.add(card);
+        }
+        return card;
+    }
+
+    public List<Card> getCurrentHand() {
+        return Collections.unmodifiableList(drawnCards);
     }
 
     public int size() {

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -31,6 +32,16 @@ public class GameService {
         }
 
         deckRepository.save(gameId, deck);
+        return new GameInfo(gameId, hand);
+    }
+
+    public GameInfo getGameInfo(String gameId) {
+        Deck deck = deckRepository.findById(gameId);
+        if (Objects.isNull(deck)) {
+            throw new IllegalArgumentException("해당 게임 ID의 덱이 존재하지 않습니다. gameId : " + gameId);
+        }
+
+        List<Card> hand = deck.getCurrentHand();
         return new GameInfo(gameId, hand);
     }
 }

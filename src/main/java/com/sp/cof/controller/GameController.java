@@ -4,9 +4,8 @@ import com.sp.cof.domain.record.GameInfo;
 import com.sp.cof.service.GameService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -20,11 +19,18 @@ public class GameController {
     private final GameService gameService;
 
     @PostMapping("/start")
-    public GameInfo gameStart() {
+    public ResponseEntity<GameInfo> gameStart() {
         String gameId = UUID.randomUUID().toString();
         long seed = Instant.now().toEpochMilli();
         log.info("[{}] Game Start! Seed = {}", gameId, seed);
 
-        return gameService.startGame(gameId, seed);
+        GameInfo gameInfo = gameService.startGame(gameId, seed);
+        return ResponseEntity.ok(gameInfo);
+    }
+
+    @GetMapping("/{gameId}")
+    public ResponseEntity<GameInfo> getGameInfo(@PathVariable String gameId) {
+        GameInfo gameInfo = gameService.getGameInfo(gameId);
+        return ResponseEntity.ok(gameInfo);
     }
 }
