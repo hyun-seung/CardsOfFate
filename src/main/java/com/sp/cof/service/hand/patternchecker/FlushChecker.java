@@ -14,7 +14,8 @@ public class FlushChecker implements HandPatternChecker {
 
     @Override
     public boolean matches(List<Card> hand) {
-        return hand.stream()
+        return hand.size() == 5 &&
+                hand.stream()
                 .map(Card::getElement)
                 .distinct()
                 .count() == 1;

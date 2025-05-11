@@ -170,5 +170,4 @@ class HandEvaluatorTest {
         );
         assertEquals(HandRank.ROYAL_STRAIGHT_FLUSH, evaluator.evulate(hand).rank());
     }
-
 }
