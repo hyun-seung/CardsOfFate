@@ -4,19 +4,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sp.cof.common.Constant;
 import com.sp.cof.domain.Deck;
+import com.sp.cof.domain.card.Card;
 import com.sp.cof.domain.enemy.EnemyInfo;
 import com.sp.cof.domain.enemy.EnemyStatusDto;
-import com.sp.cof.domain.game.GameInfoDto;
-import com.sp.cof.domain.card.Card;
-import com.sp.cof.domain.game.GameState;
-import com.sp.cof.domain.game.GameStateHistory;
-import com.sp.cof.domain.game.GameStatusDto;
+import com.sp.cof.domain.game.*;
 import com.sp.cof.repository.deck.DeckRepository;
 import com.sp.cof.repository.deck.InMemoryDeckRepository;
 import com.sp.cof.repository.game.GameRepository;
 import com.sp.cof.repository.game.InMemoryGameRepository;
 import com.sp.cof.repository.history.HistoryRepository;
 import com.sp.cof.repository.history.InMemoryHistoryRepository;
+import com.sp.cof.service.hand.HandEvaluator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -28,15 +26,19 @@ import java.util.Objects;
 @Service
 public class GameService {
 
+    private final HandEvaluator handEvaluator;
+
     private final DeckRepository deckRepository;
     private final GameRepository gameRepository;
     private final HistoryRepository historyRepository;
 
     public GameService(
+            HandEvaluator handEvaluator,
             InMemoryDeckRepository deckRepository,
             InMemoryGameRepository gameRepository,
             InMemoryHistoryRepository historyRepository
     ) {
+        this.handEvaluator = handEvaluator;
         this.deckRepository = deckRepository;
         this.gameRepository = gameRepository;
         this.historyRepository = historyRepository;
@@ -57,13 +59,44 @@ public class GameService {
     }
 
     public GameInfoDto getGameInfo(String gameId) {
-        Deck deck = deckRepository.findById(gameId);
+        Deck deck = deckRepository.findByGameId(gameId);
         if (Objects.isNull(deck)) {
             throw new IllegalArgumentException("해당 게임 ID의 덱이 존재하지 않습니다. gameId : " + gameId);
         }
 
         List<Card> hand = deck.getCurrentHand();
         return new GameInfoDto(gameId, hand);
+    }
+
+    public GameStatusDto processTurn(String gameId, List<Card> playerCards) {
+        GameState state = gameRepository.findByGameId(gameId);
+        Deck deck = deckRepository.findByGameId(gameId);
+        EnemyInfo enemy = EnemyInfo.ofRound(state.getCurrentRound());
+
+        HandEvaluationResult handEvaluationResult = evulatePattern(playerCards);
+        log.info("HandEvaluationResult : " + handEvaluationResult);
+        int damage = handEvaluationResult.getScore();
+
+        boolean enemyDefeated = applyDamageToEnemy(state, damage);
+        updateHand(deck, playerCards);
+        incrementTurnAddApplyEnemyAttack(state, enemy, enemyDefeated);
+        if (enemyDefeated) {
+            handleEnemyDefeat(state);
+        }
+
+        saveState(gameId, state, deck);
+
+        recordTurnHistory(gameId, state, playerCards, handEvaluationResult.getCombinationName(), damage,
+                Math.max(0, state.getEnemyHp()));
+
+        return new GameStatusDto(
+                gameId,
+                state.getCurrentRound(),
+                state.getCurrentTurn(),
+                state.getPlayerHp(),
+                playerCards,
+                new EnemyStatusDto(enemy.getAttackPower(), state.getEnemyHp(), enemy.getTurnsUntilAttack())
+        );
     }
 
     private List<Card> createDeckAndHand(String gameId, long seed) {
@@ -80,13 +113,14 @@ public class GameService {
 
     private GameState initGameState(String gameId) {
         GameState gameState = new GameState(gameId);
+        gameState.setEnemyHp(EnemyInfo.ROUND_1.getHp());
         gameRepository.save(gameId, gameState);
         return gameState;
     }
 
     private void recordInitalHistory(String gameId, List<Card> hand, GameState gameState) {
         int round = gameState.getCurrentRound();
-        EnemyInfo.ofRound(round).orElseThrow(() -> new IllegalStateException("ROUND_" + round + " enemy not found"));
+        EnemyInfo enemy = EnemyInfo.ofRound(round);
 
         String handJson = toJson(hand);
 
@@ -109,4 +143,56 @@ public class GameService {
         }
     }
 
+    private HandEvaluationResult evulatePattern(List<Card> playerCards) {
+        return handEvaluator.evulate(playerCards);
+    }
+
+    private boolean applyDamageToEnemy(GameState state, int damage) {
+        int enemyHp = state.getEnemyHp() - damage;
+        state.setEnemyHp(enemyHp);
+        log.info("EnemyHp : " + enemyHp);
+        return enemyHp <= 0;
+    }
+
+    private void updateHand(Deck deck, List<Card> playerCards) {
+        for (int i = 0; i < playerCards.size(); i++) {
+            deck.draw();
+        }
+    }
+
+    private void incrementTurnAddApplyEnemyAttack(GameState state, EnemyInfo enemy, boolean defeated) {
+        state.incremnetTurn();
+        if (!defeated && state.getCurrentTurn() % enemy.getTurnsUntilAttack() == 0) {
+            state.damagePlayer(enemy.getAttackPower());
+        }
+    }
+
+    private void handleEnemyDefeat(GameState gameState) {
+        gameState.nextRound();
+        gameState.resetTrun();
+
+        EnemyInfo nextEnemy = EnemyInfo.ofRound(gameState.getCurrentRound());
+        gameState.setEnemyHp(nextEnemy.getHp());
+    }
+
+    private void saveState(String gameId, GameState state, Deck deck) {
+        gameRepository.save(gameId, state);
+        deckRepository.save(gameId, deck);
+    }
+
+    private void recordTurnHistory(String gameId, GameState gameState, List<Card> playerCards, String pattern,
+                                   int damage, int enemyHp) {
+        String handJson = toJson(playerCards);
+
+        GameStateHistory history = GameStateHistory.builder()
+                .gameId(gameId)
+                .round(gameState.getCurrentRound())
+                .turn(gameState.getCurrentTurn())
+                .playerHp(gameState.getPlayerHp())
+                .handJson(handJson)
+                .enemyHp(gameState.getEnemyHp())
+                .build();
+
+        historyRepository.save(history);
+    }
 }

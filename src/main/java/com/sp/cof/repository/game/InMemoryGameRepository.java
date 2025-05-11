@@ -1,5 +1,6 @@
 package com.sp.cof.repository.game;
 
+import com.sp.cof.domain.Deck;
 import com.sp.cof.domain.game.GameState;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -21,6 +22,11 @@ public class InMemoryGameRepository implements GameRepository {
     public void save(String gameId, GameState gameState) {
         storage.put(gameId, gameState);
         print();
+    }
+
+    @Override
+    public GameState findByGameId(String gameId) {
+        return storage.get(gameId);
     }
 
     private void print() {

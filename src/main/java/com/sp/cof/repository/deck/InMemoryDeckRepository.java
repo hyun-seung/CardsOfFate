@@ -24,7 +24,7 @@ public class InMemoryDeckRepository implements DeckRepository {
     }
 
     @Override
-    public Deck findById(String gameId) {
+    public Deck findByGameId(String gameId) {
         return storage.get(gameId);
     }
 

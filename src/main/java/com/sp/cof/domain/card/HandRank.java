@@ -27,6 +27,6 @@ public enum HandRank {
 
     @Override
     public String toString() {
-        return getKoName();
+        return this.name();
     }
 }

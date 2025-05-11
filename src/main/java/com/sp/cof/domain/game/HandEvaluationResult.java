@@ -14,4 +14,6 @@ public record HandEvaluationResult(HandRank rank, List<Card> hand) {
     public String getCombinationName() {
         return rank.getKoName();
     }
+
+
 }

@@ -24,13 +24,14 @@ public enum EnemyInfo {
     ROUND_10(10, 1, 12, 5_000);
 
     private final int round;
-    private final int trunsUntilAttack;
+    private final int turnsUntilAttack;
     private final int attackPower;
     private final int hp;
 
-    public static Optional<EnemyInfo> ofRound(int round) {
+    public static EnemyInfo ofRound(int round) {
         return Arrays.stream(values())
                 .filter(e -> e.name().equals("ROUND_" + round))
-                .findFirst();
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("잘못된 round 정보입니다."));
     }
 }

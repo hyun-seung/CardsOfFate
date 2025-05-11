@@ -9,7 +9,7 @@ public record EnemyStatusDto(
         return new EnemyStatusDto(
                 enemyInfo.getAttackPower(),
                 enemyInfo.getHp(),
-                enemyInfo.getTrunsUntilAttack()
+                enemyInfo.getTurnsUntilAttack()
         );
     }
 
