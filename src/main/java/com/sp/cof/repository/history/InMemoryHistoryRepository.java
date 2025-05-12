@@ -23,6 +23,11 @@ public class InMemoryHistoryRepository implements HistoryRepository {
         print();
     }
 
+    @Override
+    public GameStateHistory findByGameId(String gameId) {
+        return storage.get(gameId);
+    }
+
     private void print() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n").append("=== [History Repository] ===").append("\n");

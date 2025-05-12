@@ -1,6 +1,7 @@
 package com.sp.cof.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sp.cof.common.Constant;
 import com.sp.cof.domain.Deck;
@@ -18,6 +19,7 @@ import com.sp.cof.service.hand.HandEvaluator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -70,15 +72,19 @@ public class GameService {
 
     public GameStatusDto processTurn(String gameId, List<Card> playerCards) {
         GameState state = gameRepository.findByGameId(gameId);
-        Deck deck = deckRepository.findByGameId(gameId);
-        EnemyInfo enemy = EnemyInfo.ofRound(state.getCurrentRound());
 
         HandEvaluationResult handEvaluationResult = evulatePattern(playerCards);
         log.info("HandEvaluationResult : " + handEvaluationResult);
         int damage = handEvaluationResult.getScore();
 
+        Deck deck = deckRepository.findByGameId(gameId);
+        EnemyInfo enemy = EnemyInfo.ofRound(state.getCurrentRound());
+
+        GameStateHistory history = historyRepository.findByGameId(gameId);
+        List<Card> lastHand = fromJson(history.getHandJson());
+
         boolean enemyDefeated = applyDamageToEnemy(state, damage);
-        updateHand(deck, playerCards);
+        List<Card> updatedHand = updateHand(deck, lastHand, playerCards);
         incrementTurnAddApplyEnemyAttack(state, enemy, enemyDefeated);
         if (enemyDefeated) {
             handleEnemyDefeat(state);
@@ -94,7 +100,7 @@ public class GameService {
                 state.getCurrentRound(),
                 state.getCurrentTurn(),
                 state.getPlayerHp(),
-                playerCards,
+                updatedHand,
                 new EnemyStatusDto(enemy.getAttackPower(), state.getEnemyHp(), enemy.getTurnsUntilAttack())
         );
     }
@@ -154,10 +160,17 @@ public class GameService {
         return enemyHp <= 0;
     }
 
-    private void updateHand(Deck deck, List<Card> playerCards) {
-        for (int i = 0; i < playerCards.size(); i++) {
-            deck.draw();
+    private List<Card> updateHand(Deck deck, List<Card> currentHand, List<Card> usedCards) {
+        List<Card> updated = new ArrayList<>(currentHand);
+        boolean b = updated.removeAll(usedCards);
+        log.info("b : {}", b);
+        for (int i = 0; i < usedCards.size(); i++) {
+            Card drawn = deck.draw();
+            if (Objects.nonNull(drawn)) {
+                updated.add(drawn);
+            }
         }
+        return updated;
     }
 
     private void incrementTurnAddApplyEnemyAttack(GameState state, EnemyInfo enemy, boolean defeated) {
@@ -194,5 +207,14 @@ public class GameService {
                 .build();
 
         historyRepository.save(history);
+    }
+
+    private List<Card> fromJson(String json) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(json, new TypeReference<>() {});
+        } catch (IOException e) {
+            throw new RuntimeException("카드 역직렬화 실패", e);
+        }
     }
 }
