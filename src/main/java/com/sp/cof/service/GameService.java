@@ -162,8 +162,7 @@ public class GameService {
 
     private List<Card> updateHand(Deck deck, List<Card> currentHand, List<Card> usedCards) {
         List<Card> updated = new ArrayList<>(currentHand);
-        boolean b = updated.removeAll(usedCards);
-        log.info("b : {}", b);
+        updated.removeAll(usedCards);
         for (int i = 0; i < usedCards.size(); i++) {
             Card drawn = deck.draw();
             if (Objects.nonNull(drawn)) {
