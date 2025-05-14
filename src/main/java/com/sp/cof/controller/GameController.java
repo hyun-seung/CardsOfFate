@@ -1,5 +1,6 @@
 package com.sp.cof.controller;
 
+import com.sp.cof.domain.common.ApiResponse;
 import com.sp.cof.domain.game.GameInfoDto;
 import com.sp.cof.domain.game.GameStatusDto;
 import com.sp.cof.domain.turn.TurnRequestDto;
@@ -21,13 +22,13 @@ public class GameController {
     private final GameService gameService;
 
     @PostMapping("/start")
-    public ResponseEntity<GameStatusDto> gameStart() {
+    public ResponseEntity<ApiResponse<GameStatusDto>> gameStart() {
         String gameId = UUID.randomUUID().toString();
         long seed = Instant.now().toEpochMilli();
         log.info("[{}] Game Start! Seed = {}", gameId, seed);
 
         GameStatusDto gameStatusDto = gameService.startGame(gameId, seed);
-        return ResponseEntity.ok(gameStatusDto);
+        return ResponseEntity.ok(ApiResponse.success(gameStatusDto));
     }
 
     @GetMapping("/{gameId}")
@@ -37,9 +38,9 @@ public class GameController {
     }
 
     @PostMapping("/turn")
-    public ResponseEntity<GameStatusDto> processTurn(@RequestBody TurnRequestDto turnRequestDto) {
+    public ResponseEntity<ApiResponse<GameStatusDto>> processTurn(@RequestBody TurnRequestDto turnRequestDto) {
         log.info("TurnRequestDto.playerCards : " + turnRequestDto.playedCards());
         GameStatusDto gameStatusDto = gameService.processTurn(turnRequestDto.gameId(), turnRequestDto.playedCards());
-        return ResponseEntity.ok(gameStatusDto);
+        return ResponseEntity.ok(ApiResponse.success(gameStatusDto));
     }
 }
