@@ -2,7 +2,10 @@ package com.sp.cof.repository.history;
 
 import com.sp.cof.domain.game.GameStateHistory;
 
+import java.util.List;
+
 public interface HistoryRepository {
     void save(GameStateHistory history);
-    GameStateHistory findByGameId(String gameId);
+    List<GameStateHistory> findByGameId(String gameId);
+    GameStateHistory findLatestByGameId(String gameId);
 }
