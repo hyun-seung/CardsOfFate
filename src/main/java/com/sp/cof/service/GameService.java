@@ -60,14 +60,24 @@ public class GameService {
         );
     }
 
-    public GameInfoDto getGameInfo(String gameId) {
+    public GameStatusDto getGameStatus(String gameId) {
+        GameState state = gameRepository.findByGameId(gameId);
         Deck deck = deckRepository.findByGameId(gameId);
-        if (Objects.isNull(deck)) {
-            throw new IllegalArgumentException("해당 게임 ID의 덱이 존재하지 않습니다. gameId : " + gameId);
-        }
+        EnemyInfo enemy = EnemyInfo.ofRound(state.getCurrentRound());
 
-        List<Card> hand = deck.getCurrentHand();
-        return new GameInfoDto(gameId, hand);
+        GameStateHistory lastTurn = historyRepository.findLatestByGameId(gameId);
+
+        List<Card> previousHand = fromJson(lastTurn.getHandJson());
+        List<Card> updatedHand = drawToRestoreHand(previousHand, deck);
+
+        return new GameStatusDto(
+                gameId,
+                state.getCurrentRound(),
+                state.getCurrentTurn(),
+                state.getPlayerHp(),
+                updatedHand,
+                new EnemyStatusDto(enemy.getAttackPower(), state.getEnemyHp(), enemy.getTurnsUntilAttack())
+        );
     }
 
     public GameStatusDto processTurn(String gameId, List<Card> playerCards) {
@@ -80,7 +90,7 @@ public class GameService {
         Deck deck = deckRepository.findByGameId(gameId);
         EnemyInfo enemy = EnemyInfo.ofRound(state.getCurrentRound());
 
-        GameStateHistory history = historyRepository.findByGameId(gameId);
+        GameStateHistory history = historyRepository.findLatestByGameId(gameId);
         List<Card> lastHand = fromJson(history.getHandJson());
 
         boolean enemyDefeated = applyDamageToEnemy(state, damage);
@@ -92,7 +102,7 @@ public class GameService {
 
         saveState(gameId, state, deck);
 
-        recordTurnHistory(gameId, state, playerCards, handEvaluationResult.getCombinationName(), damage,
+        recordTurnHistory(gameId, state, updatedHand, handEvaluationResult.getCombinationName(), damage,
                 Math.max(0, state.getEnemyHp()));
 
         return new GameStatusDto(
@@ -215,5 +225,19 @@ public class GameService {
         } catch (IOException e) {
             throw new RuntimeException("카드 역직렬화 실패", e);
         }
+    }
+
+    private List<Card> drawToRestoreHand(List<Card> previousHand, Deck deck) {
+        List<Card> restored = new ArrayList<>();
+
+        while (restored.size() < Constant.INITIAL_HAND_SIZE) {
+            Card card = deck.draw();
+            if (Objects.isNull(card)) {
+                break;
+            }
+
+            restored.add(card);
+        }
+        return restored;
     }
 }

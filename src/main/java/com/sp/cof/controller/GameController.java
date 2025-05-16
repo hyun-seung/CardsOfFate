@@ -1,7 +1,6 @@
 package com.sp.cof.controller;
 
 import com.sp.cof.domain.common.ApiResponse;
-import com.sp.cof.domain.game.GameInfoDto;
 import com.sp.cof.domain.game.GameStatusDto;
 import com.sp.cof.domain.turn.TurnRequestDto;
 import com.sp.cof.service.GameService;
@@ -32,12 +31,12 @@ public class GameController {
     }
 
     @GetMapping("/{gameId}")
-    public ResponseEntity<GameInfoDto> getGameInfo(@PathVariable String gameId) {
-        GameInfoDto gameInfoDto = gameService.getGameInfo(gameId);
-        return ResponseEntity.ok(gameInfoDto);
+    public ResponseEntity<GameStatusDto> getGameStatus(@PathVariable String gameId) {
+        GameStatusDto gameStatusDto = gameService.getGameStatus(gameId);
+        return ResponseEntity.ok(gameStatusDto);
     }
 
-    @PostMapping("/turn")
+    @PostMapping("/process")
     public ResponseEntity<ApiResponse<GameStatusDto>> processTurn(@RequestBody TurnRequestDto turnRequestDto) {
         log.info("TurnRequestDto.playerCards : " + turnRequestDto.playedCards());
         GameStatusDto gameStatusDto = gameService.processTurn(turnRequestDto.gameId(), turnRequestDto.playedCards());
