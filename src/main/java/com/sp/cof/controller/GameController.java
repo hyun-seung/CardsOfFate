@@ -31,9 +31,9 @@ public class GameController {
     }
 
     @GetMapping("/{gameId}")
-    public ResponseEntity<GameStatusDto> getGameStatus(@PathVariable String gameId) {
+    public ResponseEntity<ApiResponse<GameStatusDto>> getGameStatus(@PathVariable String gameId) {
         GameStatusDto gameStatusDto = gameService.getGameStatus(gameId);
-        return ResponseEntity.ok(gameStatusDto);
+        return ResponseEntity.ok(ApiResponse.success(gameStatusDto));
     }
 
     @PostMapping("/process")
