@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
     })
     public ResponseEntity<ApiResponse<Void>> noHandlerFoundExceptionHandler(HttpServletRequest request, Exception e) {
         log.error(e.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), ErrorCode.NOT_FOUND_HANDLER.getCode(), ErrorCode.NOT_FOUND_HANDLER.getMessage()));
     }
 
