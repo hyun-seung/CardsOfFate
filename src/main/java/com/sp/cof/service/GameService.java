@@ -68,14 +68,13 @@ public class GameService {
         GameStateHistory lastTurn = historyRepository.findLatestByGameId(gameId);
 
         List<Card> previousHand = fromJson(lastTurn.getHandJson());
-        List<Card> updatedHand = drawToRestoreHand(previousHand, deck);
 
         return new GameStatusDto(
                 gameId,
                 state.getCurrentRound(),
                 state.getCurrentTurn(),
                 state.getPlayerHp(),
-                updatedHand,
+                previousHand,
                 new EnemyStatusDto(enemy.getAttackPower(), state.getEnemyHp(), enemy.getTurnsUntilAttack())
         );
     }
@@ -225,19 +224,5 @@ public class GameService {
         } catch (IOException e) {
             throw new RuntimeException("카드 역직렬화 실패", e);
         }
-    }
-
-    private List<Card> drawToRestoreHand(List<Card> previousHand, Deck deck) {
-        List<Card> restored = new ArrayList<>();
-
-        while (restored.size() < Constant.INITIAL_HAND_SIZE) {
-            Card card = deck.draw();
-            if (Objects.isNull(card)) {
-                break;
-            }
-
-            restored.add(card);
-        }
-        return restored;
     }
 }
