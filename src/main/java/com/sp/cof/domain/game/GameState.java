@@ -1,5 +1,6 @@
 package com.sp.cof.domain.game;
 
+import com.sp.cof.common.Constant;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,8 @@ public class GameState {
     private int playerHp = 100;
 
     private int currentTurn = 1;
+
+    private int discardRemainingThisRound;
 
     @Setter
     private int enemyHp;
@@ -35,6 +38,21 @@ public class GameState {
         this.playerHp = Math.max(0, playerHp - damage);
     }
 
+    public boolean canDiscard() {
+        return discardRemainingThisRound > 0;
+    }
+
+    public void useDiscard() {
+        if (canDiscard()) {
+            discardRemainingThisRound -= 1;
+        }
+    }
+
+    public void resetTurn() {
+        this.currentTurn = 1;
+        this.discardRemainingThisRound = Constant.MAX_DISCARD_PER_ROUND;
+    }
+
     @Override
     public String toString() {
         return "GameState{" +
@@ -42,6 +60,7 @@ public class GameState {
                 ", currentRound=" + currentRound +
                 ", playerHp=" + playerHp +
                 ", currentTurn=" + currentTurn +
+                ", discardRemainingThisRound=" + discardRemainingThisRound +
                 ", enemyHp=" + enemyHp +
                 '}';
     }

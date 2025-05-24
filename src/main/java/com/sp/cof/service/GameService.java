@@ -114,6 +114,31 @@ public class GameService {
         );
     }
 
+    public GameStatusDto discardCards(String gameId, List<Card> discardedCards) {
+        GameState gameState = gameRepository.findByGameId(gameId);
+        GameStateHistory lastHistory = historyRepository.findLatestByGameId(gameId);
+        List<Card> currentHand = fromJson(lastHistory.getHandJson());
+
+        Deck deck = deckRepository.findByGameId(gameId);
+        List<Card> updatedHand = updateHand(deck, currentHand, discardedCards);
+
+        gameState.useDiscard();
+
+        saveState(gameId, gameState, deck);
+        recordTurnHistory(gameId, gameState, updatedHand, "DISCARD", 0, gameState.getEnemyHp());
+
+        EnemyInfo enemy = EnemyInfo.ofRound(gameState.getCurrentRound());
+
+        return new GameStatusDto(
+                gameId,
+                gameState.getCurrentRound(),
+                gameState.getCurrentTurn(),
+                gameState.getPlayerHp(),
+                updatedHand,
+                new EnemyStatusDto(enemy.getAttackPower(), gameState.getEnemyHp(), enemy.getTurnsUntilAttack())
+        );
+    }
+
     private List<Card> createDeckAndHand(String gameId, long seed) {
         Deck deck = new Deck(seed);
 

@@ -6,6 +6,7 @@ import java.util.List;
 
 public record TurnRequestDto (
         String gameId,
-        List<Card> playedCards
+        List<Card> playedCards,
+        ActionType actionType
 ) {
 }

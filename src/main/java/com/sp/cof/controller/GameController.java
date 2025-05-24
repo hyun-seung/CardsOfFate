@@ -38,8 +38,13 @@ public class GameController {
 
     @PostMapping("/process")
     public ResponseEntity<ApiResponse<GameStatusDto>> processTurn(@RequestBody TurnRequestDto turnRequestDto) {
-        log.info("TurnRequestDto.playerCards : " + turnRequestDto.playedCards());
-        GameStatusDto gameStatusDto = gameService.processTurn(turnRequestDto.gameId(), turnRequestDto.playedCards());
-        return ResponseEntity.ok(ApiResponse.success(gameStatusDto));
+        log.info("GameId : {}, Action : {}, Cards : {}",
+                turnRequestDto.gameId(), turnRequestDto.actionType(), turnRequestDto.playedCards());
+
+        GameStatusDto result = switch (turnRequestDto.actionType()) {
+            case ATTACk -> gameService.processTurn(turnRequestDto.gameId(), turnRequestDto.playedCards());
+            case DISCARD -> gameService.discardCards(turnRequestDto.gameId(), turnRequestDto.playedCards());
+        };
+        return ResponseEntity.ok(ApiResponse.success(result));
     }
 }
