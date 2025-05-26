@@ -39,7 +39,7 @@ jobs:
         run: npx puppeteer-pdf api-docs.html api-docs.pdf
 
       - name: Upload Artifacts (HTML, PDF)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: api-docs
           path: |
