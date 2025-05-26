@@ -1,0 +1,42 @@
+name: Deploy Swagger Docs to GitHub Pages
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    name: Deploy API Docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install redoc-cli
+        run: npm install -g redoc-cli
+
+      - name: Build Spring Boot App
+        run: |
+          ./gradlew bootJar
+          java -jar build/libs/*.jar &
+          sleep 15
+
+      - name: Download OpenAPI YAML
+        run: curl -s http://localhost:8080/v3/api-docs.yaml -o openapi.yaml
+
+      - name: Generate Redoc HTML
+        run: |
+          mkdir -p docs
+          redoc-cli bundle openapi.yaml -o docs/index.html
+
+      - name: Commit & Push to master/docs
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add docs/index.html
+          git commit -m "자동 생성된 Swagger HTML 문서 추가"
+          git push
