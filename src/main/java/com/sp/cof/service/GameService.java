@@ -50,33 +50,14 @@ public class GameService {
         List<Card> hand = createDeckAndHand(gameId, seed);
         GameState gameState = initGameState(gameId);
         recordInitalHistory(gameId, hand, gameState);
-        return new GameStatusDto(
-                gameId,
-                gameState.getCurrentRound(),
-                gameState.getCurrentTurn(),
-                gameState.getPlayerHp(),
-                hand,
-                EnemyStatusDto.from(EnemyInfo.ROUND_1)
-        );
+        return buildGameStatus(gameId, gameState, hand);
     }
 
     public GameStatusDto getGameStatus(String gameId) {
         GameState state = gameRepository.findByGameId(gameId);
-        Deck deck = deckRepository.findByGameId(gameId);
-        EnemyInfo enemy = EnemyInfo.ofRound(state.getCurrentRound());
-
         GameStateHistory lastTurn = historyRepository.findLatestByGameId(gameId);
-
         List<Card> previousHand = fromJson(lastTurn.getHandJson());
-
-        return new GameStatusDto(
-                gameId,
-                state.getCurrentRound(),
-                state.getCurrentTurn(),
-                state.getPlayerHp(),
-                previousHand,
-                new EnemyStatusDto(enemy.getAttackPower(), state.getEnemyHp(), enemy.getTurnsUntilAttack())
-        );
+        return buildGameStatus(gameId, state, previousHand);
     }
 
     public GameStatusDto processTurn(String gameId, List<Card> playerCards) {
@@ -104,14 +85,7 @@ public class GameService {
         recordTurnHistory(gameId, state, updatedHand, handEvaluationResult.getCombinationName(), damage,
                 Math.max(0, state.getEnemyHp()));
 
-        return new GameStatusDto(
-                gameId,
-                state.getCurrentRound(),
-                state.getCurrentTurn(),
-                state.getPlayerHp(),
-                updatedHand,
-                new EnemyStatusDto(enemy.getAttackPower(), state.getEnemyHp(), enemy.getTurnsUntilAttack())
-        );
+        return buildGameStatus(gameId, state, updatedHand);
     }
 
     public GameStatusDto discardCards(String gameId, List<Card> discardedCards) {
@@ -129,14 +103,7 @@ public class GameService {
 
         EnemyInfo enemy = EnemyInfo.ofRound(gameState.getCurrentRound());
 
-        return new GameStatusDto(
-                gameId,
-                gameState.getCurrentRound(),
-                gameState.getCurrentTurn(),
-                gameState.getPlayerHp(),
-                updatedHand,
-                new EnemyStatusDto(enemy.getAttackPower(), gameState.getEnemyHp(), enemy.getTurnsUntilAttack())
-        );
+        return buildGameStatus(gameId, gameState, updatedHand);
     }
 
     private List<Card> createDeckAndHand(String gameId, long seed) {
@@ -208,7 +175,7 @@ public class GameService {
 
     private void incrementTurnAddApplyEnemyAttack(GameState state, EnemyInfo enemy, boolean defeated) {
         state.incremnetTurn();
-        if (!defeated && state.getCurrentTurn() % enemy.getTurnsUntilAttack() == 0) {
+        if (!defeated && state.getCurrentTurn() % enemy.getAttackTurn() == 0) {
             state.damagePlayer(enemy.getAttackPower());
         }
     }
@@ -240,6 +207,18 @@ public class GameService {
                 .build();
 
         historyRepository.save(history);
+    }
+
+    private GameStatusDto buildGameStatus(String gameId, GameState state, List<Card> hand) {
+        EnemyInfo enemy = EnemyInfo.ofRound(state.getCurrentRound());
+        return new GameStatusDto(
+                gameId,
+                state.getCurrentRound(),
+                state.getCurrentTurn(),
+                state.getPlayerHp(),
+                hand,
+                EnemyStatusDto.from(enemy, state)
+        );
     }
 
     private List<Card> fromJson(String json) {

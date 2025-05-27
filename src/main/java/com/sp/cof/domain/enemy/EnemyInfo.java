@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 @Slf4j
 @Getter
@@ -24,7 +23,7 @@ public enum EnemyInfo {
     ROUND_10(10, 1, 12, 5_000);
 
     private final int round;
-    private final int turnsUntilAttack;
+    private final int attackTurn;
     private final int attackPower;
     private final int hp;
 
