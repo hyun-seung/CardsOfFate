@@ -3,6 +3,9 @@ name: Deploy Swagger Docs to GitHub Pages
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'src/**'
+      - 'docs/**'
 
 permissions:
   contents: write
