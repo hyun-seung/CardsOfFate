@@ -13,10 +13,10 @@ import java.util.List;
 @Component
 public class HandEvaluator {
 
-    private final List<HandPatternChecker> checkers;
+    private static List<HandPatternChecker> checkers;
 
     public HandEvaluator() {
-        this.checkers = List.of(
+        checkers = List.of(
                 new RoyalStraightFlushChecker(),
                 new StraightFlushChecker(),
                 new FourOfAKindChecker(),
@@ -29,7 +29,7 @@ public class HandEvaluator {
         );
     }
 
-    public HandEvaluationResult evulate(List<Card> hand) {
+    public static HandEvaluationResult evulate(List<Card> hand) {
         for (HandPatternChecker checker : checkers) {
             if (checker.matches(hand)) {
                 return new HandEvaluationResult(checker.getRank(), hand);

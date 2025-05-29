@@ -28,19 +28,15 @@ import java.util.Objects;
 @Service
 public class GameService {
 
-    private final HandEvaluator handEvaluator;
-
     private final DeckRepository deckRepository;
     private final GameRepository gameRepository;
     private final HistoryRepository historyRepository;
 
     public GameService(
-            HandEvaluator handEvaluator,
             InMemoryDeckRepository deckRepository,
             InMemoryGameRepository gameRepository,
             InMemoryHistoryRepository historyRepository
     ) {
-        this.handEvaluator = handEvaluator;
         this.deckRepository = deckRepository;
         this.gameRepository = gameRepository;
         this.historyRepository = historyRepository;
@@ -151,7 +147,7 @@ public class GameService {
     }
 
     private HandEvaluationResult evulatePattern(List<Card> playerCards) {
-        return handEvaluator.evulate(playerCards);
+        return HandEvaluator.evulate(playerCards);
     }
 
     private boolean applyDamageToEnemy(GameState state, int damage) {
