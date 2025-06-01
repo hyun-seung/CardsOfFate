@@ -21,6 +21,9 @@ public record GameStatusDto(
         @Schema(description = "플레이어 체력", example = "100")
         int playerHp,
 
+        @Schema(description = "남은 버리기 횟수", example = "2")
+        int remainingDiscards,
+
         @Schema(description = "현재 핸드 카드", example = "[\"N_7\", \"L_9\"]")
         List<Card> hand,
 

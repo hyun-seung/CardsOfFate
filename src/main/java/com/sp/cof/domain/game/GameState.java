@@ -32,6 +32,7 @@ public class GameState {
 
     public void resetTrun() {
         this.currentTurn = 1;
+        this.discardRemainingThisRound = Constant.MAX_DISCARD_PER_ROUND;
     }
 
     public void damagePlayer(int damage) {
@@ -46,11 +47,6 @@ public class GameState {
         if (canDiscard()) {
             discardRemainingThisRound -= 1;
         }
-    }
-
-    public void resetTurn() {
-        this.currentTurn = 1;
-        this.discardRemainingThisRound = Constant.MAX_DISCARD_PER_ROUND;
     }
 
     @Override

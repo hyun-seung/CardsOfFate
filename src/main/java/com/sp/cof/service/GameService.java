@@ -212,6 +212,7 @@ public class GameService {
                 state.getCurrentRound(),
                 state.getCurrentTurn(),
                 state.getPlayerHp(),
+                Constant.MAX_DISCARD_PER_ROUND - state.getDiscardRemainingThisRound(),
                 hand,
                 EnemyStatusDto.from(enemy, state)
         );
