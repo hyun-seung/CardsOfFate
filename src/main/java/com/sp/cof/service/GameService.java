@@ -102,6 +102,11 @@ public class GameService {
         return buildGameStatus(gameId, gameState, updatedHand);
     }
 
+    public List<Card> getRemainingDeck(String gameId) {
+        Deck deck = deckRepository.findByGameId(gameId);
+        return deck.getRemainingCards();
+    }
+
     private List<Card> createDeckAndHand(String gameId, long seed) {
         Deck deck = new Deck(seed);
 

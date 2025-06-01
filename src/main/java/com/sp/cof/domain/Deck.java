@@ -29,6 +29,10 @@ public class Deck {
         return card;
     }
 
+    public List<Card> getRemainingCards() {
+        return new ArrayList<>(cards);
+    }
+
     public List<Card> getCurrentHand() {
         return Collections.unmodifiableList(drawnCards);
     }
