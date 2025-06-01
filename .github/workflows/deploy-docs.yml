@@ -39,11 +39,9 @@ jobs:
           mkdir -p docs
           redoc-cli bundle openapi.yaml -o docs/index.html
 
-      - name: Commit & Push to master/docs
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          git add docs/index.html
-          git commit -m "자동 생성된 Swagger HTML 문서 추가"
-          git push
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./docs
