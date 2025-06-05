@@ -16,6 +16,14 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiResponse<Void>> businessExceptionHandler(HttpServletRequest request, BusinessException e) {
+        ErrorCode errorCode = e.getErrorCode();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), errorCode.getCode(), errorCode.getDesc()));
+    }
+
     @ExceptionHandler({
             NoHandlerFoundException.class, MethodArgumentTypeMismatchException.class, HttpRequestMethodNotSupportedException.class
     })

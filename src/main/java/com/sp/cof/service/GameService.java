@@ -28,15 +28,20 @@ import java.util.Objects;
 @Service
 public class GameService {
 
+    private final HandService handService;
+
     private final DeckRepository deckRepository;
     private final GameRepository gameRepository;
     private final HistoryRepository historyRepository;
 
     public GameService(
+            HandService handService,
             InMemoryDeckRepository deckRepository,
             InMemoryGameRepository gameRepository,
             InMemoryHistoryRepository historyRepository
     ) {
+        this.handService = handService;
+
         this.deckRepository = deckRepository;
         this.gameRepository = gameRepository;
         this.historyRepository = historyRepository;
@@ -70,7 +75,7 @@ public class GameService {
         List<Card> lastHand = fromJson(history.getHandJson());
 
         boolean enemyDefeated = applyDamageToEnemy(state, damage);
-        List<Card> updatedHand = updateHand(deck, lastHand, playerCards);
+        List<Card> updatedHand = handService.updateHandAfterPlay(deck, lastHand, playerCards);
         incrementTurnAddApplyEnemyAttack(state, enemy, enemyDefeated);
         if (enemyDefeated) {
             handleEnemyDefeat(state);
@@ -90,7 +95,7 @@ public class GameService {
         List<Card> currentHand = fromJson(lastHistory.getHandJson());
 
         Deck deck = deckRepository.findByGameId(gameId);
-        List<Card> updatedHand = updateHand(deck, currentHand, discardedCards);
+        List<Card> updatedHand = handService.updateHandAfterPlay(deck, currentHand, discardedCards);
 
         gameState.useDiscard();
 
@@ -109,12 +114,7 @@ public class GameService {
 
     private List<Card> createDeckAndHand(String gameId, long seed) {
         Deck deck = new Deck(seed);
-
-        List<Card> hand = new ArrayList<>();
-        for (int i = 0; i < Constant.INITIAL_HAND_SIZE; i++) {
-            hand.add(deck.draw());
-        }
-
+        List<Card> hand = handService.createInitialHand(deck);
         deckRepository.save(gameId, deck);
         return hand;
     }

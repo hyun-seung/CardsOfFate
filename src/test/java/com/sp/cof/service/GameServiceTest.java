@@ -18,17 +18,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GameServiceTest {
 
     private GameService gameService;
+    private HandService handService;
+
     private InMemoryDeckRepository deckRepository;
     private InMemoryGameRepository gameRepository;
     private InMemoryHistoryRepository historyRepository;
 
     @BeforeEach
     void setUp() {
+        handService = new HandService();
         deckRepository = new InMemoryDeckRepository();
         gameRepository = new InMemoryGameRepository();
         historyRepository = new InMemoryHistoryRepository();
 
-        gameService = new GameService(deckRepository, gameRepository, historyRepository);
+        gameService = new GameService(handService, deckRepository, gameRepository, historyRepository);
     }
 
     @Test
