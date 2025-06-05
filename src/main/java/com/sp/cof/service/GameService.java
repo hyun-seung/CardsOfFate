@@ -8,7 +8,10 @@ import com.sp.cof.domain.Deck;
 import com.sp.cof.domain.card.Card;
 import com.sp.cof.domain.enemy.EnemyInfo;
 import com.sp.cof.domain.enemy.EnemyStatusDto;
-import com.sp.cof.domain.game.*;
+import com.sp.cof.domain.game.GameState;
+import com.sp.cof.domain.game.GameStateHistory;
+import com.sp.cof.domain.game.GameStatusDto;
+import com.sp.cof.domain.game.HandEvaluationResult;
 import com.sp.cof.repository.deck.DeckRepository;
 import com.sp.cof.repository.deck.InMemoryDeckRepository;
 import com.sp.cof.repository.game.GameRepository;
@@ -20,15 +23,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Service
 public class GameService {
 
     private final HandService handService;
+    private final EnemyService enemyService;
 
     private final DeckRepository deckRepository;
     private final GameRepository gameRepository;
@@ -36,11 +38,13 @@ public class GameService {
 
     public GameService(
             HandService handService,
+            EnemyService enemyService,
             InMemoryDeckRepository deckRepository,
             InMemoryGameRepository gameRepository,
             InMemoryHistoryRepository historyRepository
     ) {
         this.handService = handService;
+        this.enemyService = enemyService;
 
         this.deckRepository = deckRepository;
         this.gameRepository = gameRepository;
@@ -74,11 +78,12 @@ public class GameService {
         GameStateHistory history = historyRepository.findLatestByGameId(gameId);
         List<Card> lastHand = fromJson(history.getHandJson());
 
-        boolean enemyDefeated = applyDamageToEnemy(state, damage);
+        boolean enemyDefeated = enemyService.applyDamageToEnemy(state, damage);
         List<Card> updatedHand = handService.updateHandAfterPlay(deck, lastHand, playerCards);
-        incrementTurnAddApplyEnemyAttack(state, enemy, enemyDefeated);
+        enemyService.processTurnAndEnemyAttack(state, enemy, enemyDefeated);
+
         if (enemyDefeated) {
-            handleEnemyDefeat(state);
+            enemyService.handleEnemyDefeat(state);
         }
 
         saveState(gameId, state, deck);
@@ -155,40 +160,6 @@ public class GameService {
         return HandEvaluator.evulate(playerCards);
     }
 
-    private boolean applyDamageToEnemy(GameState state, int damage) {
-        int enemyHp = state.getEnemyHp() - damage;
-        state.setEnemyHp(enemyHp);
-        log.info("EnemyHp : " + enemyHp);
-        return enemyHp <= 0;
-    }
-
-    private List<Card> updateHand(Deck deck, List<Card> currentHand, List<Card> usedCards) {
-        List<Card> updated = new ArrayList<>(currentHand);
-        updated.removeAll(usedCards);
-        for (int i = 0; i < usedCards.size(); i++) {
-            Card drawn = deck.draw();
-            if (Objects.nonNull(drawn)) {
-                updated.add(drawn);
-            }
-        }
-        return updated;
-    }
-
-    private void incrementTurnAddApplyEnemyAttack(GameState state, EnemyInfo enemy, boolean defeated) {
-        state.incremnetTurn();
-        if (!defeated && state.getCurrentTurn() % enemy.getAttackTurn() == 0) {
-            state.damagePlayer(enemy.getAttackPower());
-        }
-    }
-
-    private void handleEnemyDefeat(GameState gameState) {
-        gameState.nextRound();
-        gameState.resetTrun();
-
-        EnemyInfo nextEnemy = EnemyInfo.ofRound(gameState.getCurrentRound());
-        gameState.setEnemyHp(nextEnemy.getHp());
-    }
-
     private void saveState(String gameId, GameState state, Deck deck) {
         gameRepository.save(gameId, state);
         deckRepository.save(gameId, deck);
@@ -226,7 +197,8 @@ public class GameService {
     private List<Card> fromJson(String json) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(json, new TypeReference<>() {});
+            return mapper.readValue(json, new TypeReference<>() {
+            });
         } catch (IOException e) {
             throw new RuntimeException("카드 역직렬화 실패", e);
         }

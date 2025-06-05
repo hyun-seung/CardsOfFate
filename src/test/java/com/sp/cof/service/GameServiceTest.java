@@ -19,6 +19,7 @@ class GameServiceTest {
 
     private GameService gameService;
     private HandService handService;
+    private EnemyService enemyService;
 
     private InMemoryDeckRepository deckRepository;
     private InMemoryGameRepository gameRepository;
@@ -27,11 +28,12 @@ class GameServiceTest {
     @BeforeEach
     void setUp() {
         handService = new HandService();
+        enemyService = new EnemyService();
         deckRepository = new InMemoryDeckRepository();
         gameRepository = new InMemoryGameRepository();
         historyRepository = new InMemoryHistoryRepository();
 
-        gameService = new GameService(handService, deckRepository, gameRepository, historyRepository);
+        gameService = new GameService(handService, enemyService, deckRepository, gameRepository, historyRepository);
     }
 
     @Test
