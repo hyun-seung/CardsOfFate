@@ -2,25 +2,31 @@ package com.sp.cof.domain.game;
 
 import com.sp.cof.common.Constant;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@RequiredArgsConstructor
 public class GameState {
 
     private final String gameId;
 
-    private int currentRound = 1;
+    private int currentRound;
 
-    private int playerHp = 100;
+    private int playerHp;
 
-    private int currentTurn = 1;
+    private int currentTurn;
 
     private int discardRemainingThisRound;
 
     @Setter
     private int enemyHp;
+
+    public GameState(String gameId) {
+        this.gameId = gameId;
+        this.currentRound = 1;
+        this.playerHp = Constant.PLAYER_MAX_HP;
+        this.currentTurn = 1;
+        this.discardRemainingThisRound = Constant.MAX_DISCARD_PER_ROUND;
+    }
 
     public void incremnetTurn() {
         this.currentTurn += 1;
@@ -30,7 +36,7 @@ public class GameState {
         this.currentRound += 1;
     }
 
-    public void resetTrun() {
+    public void resetTurn() {
         this.currentTurn = 1;
         this.discardRemainingThisRound = Constant.MAX_DISCARD_PER_ROUND;
     }
