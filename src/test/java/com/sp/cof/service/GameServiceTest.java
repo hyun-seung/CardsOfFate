@@ -10,31 +10,18 @@ import com.sp.cof.repository.history.InMemoryHistoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringBootTest
 class GameServiceTest {
 
+    @Autowired
     private GameService gameService;
-    private HandService handService;
-    private EnemyService enemyService;
-
-    private InMemoryDeckRepository deckRepository;
-    private InMemoryGameRepository gameRepository;
-    private InMemoryHistoryRepository historyRepository;
-
-    @BeforeEach
-    void setUp() {
-        handService = new HandService();
-        enemyService = new EnemyService();
-        deckRepository = new InMemoryDeckRepository();
-        gameRepository = new InMemoryGameRepository();
-        historyRepository = new InMemoryHistoryRepository();
-
-        gameService = new GameService(handService, enemyService, deckRepository, gameRepository, historyRepository);
-    }
 
     @Test
     @DisplayName("startGame()은 초기 게임 상태와 핸드를 생성한다")
