@@ -33,7 +33,7 @@ public class EnemyService {
 
         // 다음 라운드로 진행
         gameState.nextRound();
-        gameState.resetTrun();
+        gameState.resetTurn();
 
         // 새로운 적 설정
         EnemyInfo nextEnemy = getEnemyForRound(gameState.getCurrentRound());
