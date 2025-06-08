@@ -48,8 +48,23 @@ public class EnemyService {
 
         gameState.incremnetTurn();
 
-        if (!enemyDefeated && shouldEnemyAttack(gameState, enemy)) {
+        if (!enemyDefeated) {
+            checkAndExecuteEnemyAttack(gameState, enemy);
+        }
+    }
+
+    private void checkAndExecuteEnemyAttack(GameState gameState, EnemyInfo enemy) {
+        int currentTurn = gameState.getCurrentTurn();
+        int attackTurn = enemy.getAttackTurn();
+
+        // 공격 턴인지 확인
+        if (currentTurn % attackTurn == 0) {
+            log.info("적 공격 턴입니다! (현재 턴: {}, 공격 주기: {})", currentTurn, attackTurn);
             executeEnemyAttack(gameState, enemy);
+        } else {
+            int turnsUntilAttack = attackTurn - (currentTurn % attackTurn);
+            log.info("적 공격까지 {}턴 남았습니다. (현재 턴: {}, 공격 주기: {})",
+                    turnsUntilAttack, currentTurn, attackTurn);
         }
     }
 
@@ -62,10 +77,6 @@ public class EnemyService {
         if (gameState.getPlayerHp() <= 0) {
             log.warn("플레이어가 쓰러졌습니다!");
         }
-    }
-
-    private boolean shouldEnemyAttack(GameState gameState, EnemyInfo enemy) {
-        return gameState.getCurrentRound() % enemy.getAttackTurn() == 0;
     }
 
     private EnemyInfo getEnemyForRound(int round) {
