@@ -46,11 +46,11 @@ public class HandService {
 
         for (int i = 0; i < cardsToDrawn; i++) {
             Card drawnCard = deck.draw();
-            if (Objects.isNull(drawnCard)) {
+            if (Objects.nonNull(drawnCard)) {
                 updatedHand.add(drawnCard);
                 actualDrawnCards++;
             } else {
-                log.warn("덱이 비어있어 카드를 뽑을 수 없습니다. {{}/{})", actualDrawnCards, cardsToDrawn);
+                log.warn("덱이 비어있어 카드를 뽑을 수 없습니다. ({}/{})", actualDrawnCards, cardsToDrawn);
                 break;
             }
         }
