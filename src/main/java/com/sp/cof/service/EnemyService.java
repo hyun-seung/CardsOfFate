@@ -19,6 +19,8 @@ public class EnemyService {
         int currentEnemyHp = gameState.getEnemyHp();
         int newEnemyHp = Math.max(0, currentEnemyHp - damage);
 
+        gameState.setEnemyHp(newEnemyHp);
+
         boolean isDefeated = newEnemyHp <= 0;
         if (isDefeated) {
             log.info("적을 처치했습니다!");
