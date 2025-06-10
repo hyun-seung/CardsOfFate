@@ -1,1 +1,3 @@
 spring.application.name=Cards Of Fate
+
+logging.config=classpath:logback-spring.xml

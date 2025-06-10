@@ -5,7 +5,7 @@
     <!-- 콘솔 로그 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{yy-MM-dd HH:mm:ss} [%level] [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -13,14 +13,13 @@
     <appender name="DEBUG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_HOME}/api-debug.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <!-- 파일명 예: api-debug.2025-06-10_0.log, api-debug.2025-06-10_1.log -->
             <fileNamePattern>${LOG_HOME}/api-debug.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
             <maxFileSize>1GB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>30GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{yy-MM-dd HH:mm:ss} [%level] [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>DEBUG</level>
@@ -37,12 +36,46 @@
             <totalSizeCap>10GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{yy-MM-dd HH:mm:ss} [%level] [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
     </appender>
+
+    <!-- Spring Framework 관련 로그 레벨 조정 -->
+    <logger name="org.springframework.web" level="WARN" />
+    <logger name="org.springframework.data" level="WARN" />
+    <logger name="org.springframework.boot.web" level="WARN" />
+    <logger name="org.springframework.boot.autoconfigure" level="WARN" />
+    <logger name="org.springframework.context" level="WARN" />
+    <logger name="org.springframework.beans" level="WARN" />
+    <logger name="org.springframework.core" level="WARN" />
+    <logger name="org.springframework.aop" level="WARN" />
+    <logger name="org.springframework.cache" level="WARN" />
+
+    <!-- Tomcat 관련 로그 -->
+    <logger name="org.apache.catalina" level="WARN" />
+    <logger name="org.apache.coyote" level="WARN" />
+    <logger name="org.apache.tomcat" level="WARN" />
+
+    <!-- Hibernate Validator 관련 로그 -->
+    <logger name="org.hibernate.validator" level="WARN" />
+    <logger name="org.jboss.logging" level="WARN" />
+
+    <!-- SpringDoc/Swagger 관련 로그 -->
+    <logger name="org.springdoc" level="WARN" />
+    <logger name="io.swagger" level="WARN" />
+
+    <!-- Jackson 관련 로그 -->
+    <logger name="com.fasterxml.jackson" level="WARN" />
+
+    <!-- 기타 라이브러리 로그 -->
+    <logger name="org.reflections" level="WARN" />
+    <logger name="com.zaxxer.hikari" level="WARN" />
+
+    <!-- 내 애플리케이션 로그는 DEBUG 유지 -->
+    <logger name="com.sp.cof" level="DEBUG" />
 
     <!-- 루트 로거 -->
     <root level="DEBUG">
@@ -50,4 +83,5 @@
         <appender-ref ref="DEBUG_FILE" />
         <appender-ref ref="ERROR_FILE" />
     </root>
+
 </configuration>
