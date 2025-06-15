@@ -1,12 +1,14 @@
 package com.sp.cof.service;
 
 import com.sp.cof.domain.game.GameState;
+import com.sp.cof.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class EnemyServiceTest {
 
@@ -76,5 +78,25 @@ class EnemyServiceTest {
         // then
         assertThat(gameState.getEnemyHp()).isEqualTo(originalHp);
         assertThat(isDefeated).isFalse();
+    }
+
+    @Test
+    @DisplayName("데미지가 음수일 때 예외를 발생시킨다")
+    void applyDamageToEnemy_NegativeDamage_ThrowsException() {
+        // given
+        int negativeDamage = -10;
+
+        // when & then
+        assertThatThrownBy(() -> enemyService.applyDamageToEnemy(gameState, negativeDamage))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("데미지 값이 양수여야 합니다");
+    }
+
+    @Test
+    @DisplayName("GameState가 null일 때 예외를 발생시킨다")
+    void applyDamageToEnemy_NullGameState_ThrowsException() {
+        // when & then
+        assertThatThrownBy(() -> enemyService.applyDamageToEnemy(null, 10))
+                .isInstanceOf(BusinessException.class);
     }
 }
