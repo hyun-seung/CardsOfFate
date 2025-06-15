@@ -11,7 +11,7 @@
     <!-- 콘솔 로그 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yy-MM-dd HH:mm:ss} [%level] [%thread] %logger{36} - %msg%n</pattern>
+            <pattern>%d{yy-MM-dd HH:mm:ss, Asia/Seoul} [%level] [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -27,7 +27,7 @@
                 <totalSizeCap>30GB</totalSizeCap>
             </rollingPolicy>
             <encoder>
-                <pattern>%d{yy-MM-dd HH:mm:ss} [%level] [%thread] %logger{36} - %msg%n</pattern>
+                <pattern>%d{yy-MM-dd HH:mm:ss, Asia/Seoul} [%level] [%thread] %logger{36} - %msg%n</pattern>
             </encoder>
             <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
                 <level>DEBUG</level>
@@ -44,7 +44,7 @@
                 <totalSizeCap>10GB</totalSizeCap>
             </rollingPolicy>
             <encoder>
-                <pattern>%d{yy-MM-dd HH:mm:ss} [%level] [%thread] %logger{36} - %msg%n</pattern>
+                <pattern>%d{yy-MM-dd HH:mm:ss, Asia/Seoul} [%level] [%thread] %logger{36} - %msg%n</pattern>
             </encoder>
             <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
                 <level>ERROR</level>
