@@ -159,4 +159,58 @@ class EnemyServiceTest {
         assertThatThrownBy(() -> enemyService.handleEnemyDefeat(null))
                 .isInstanceOf(BusinessException.class);
     }
+
+    @Test
+    @DisplayName("적이 처치되지 않았을 때 턴을 증가시킨다")
+    void processTurnAndEnemyAttack_IncrementTurn() {
+        // given
+        EnemyInfo enemy = EnemyInfo.ROUND_1;
+        int originalTurn = gameState.getCurrentTurn();
+        boolean enemyDefeated = false;
+
+        // when
+        enemyService.processTurnAndEnemyAttack(gameState, enemy, enemyDefeated);
+
+        // then
+        assertThat(gameState.getCurrentTurn()).isEqualTo(originalTurn + 1);
+    }
+
+    @Test
+    @DisplayName("적이 처치되었을 때도 턴은 증가한다")
+    void processTurnAndEnemyAttack_EnemyDefeated_TurnIncreases() {
+        // given
+        EnemyInfo enemy = EnemyInfo.ROUND_1;
+        int originalTurn = gameState.getCurrentTurn();
+        boolean enemyDefeated = true;
+
+        // when
+        enemyService.processTurnAndEnemyAttack(gameState, enemy, enemyDefeated);
+
+        // then
+        assertThat(gameState.getCurrentTurn()).isEqualTo(originalTurn + 1);
+    }
+
+    @Test
+    @DisplayName("적이 처치되었을 때는 공격 턴이어도 플레이어가 공격받지 않는다")
+    void processTurnAndEnemyAttack_EnemyDefeated_EvenOnAttackTurn_NoPlayerDamage() {
+        // given
+        EnemyInfo enemy = EnemyInfo.ROUND_1;
+        int attackTurn = enemy.getAttackTurn();
+
+        // 공격 턴이 되도록 설정
+        for (int i = 1; i < attackTurn; i++) {
+            gameState.incremnetTurn();
+        }
+        // 이제 다음 턴이 공격 턴
+
+        int originalPlayerHp = gameState.getPlayerHp();
+        boolean enemyDefeated = true;
+
+        // when
+        enemyService.processTurnAndEnemyAttack(gameState, enemy, enemyDefeated);
+
+        // then
+        assertThat(gameState.getCurrentTurn()).isEqualTo(attackTurn + 1); // 공격 턴임을 확인
+        assertThat(gameState.getPlayerHp()).isEqualTo(originalPlayerHp); // 하지만 공격받지 않음
+    }
 }
