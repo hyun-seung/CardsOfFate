@@ -59,12 +59,11 @@ public class EnemyService {
         int currentTurn = gameState.getCurrentTurn();
         int attackTurn = enemy.getAttackTurn();
 
-        // 공격 턴인지 확인
-        if (currentTurn % attackTurn == 0) {
+        if (currentTurn > attackTurn && (currentTurn - 1) % attackTurn == 0) {
             log.info("적 공격 턴입니다! (현재 턴: {}, 공격 주기: {})", currentTurn, attackTurn);
             executeEnemyAttack(gameState, enemy);
         } else {
-            int turnsUntilAttack = attackTurn - (currentTurn % attackTurn);
+            int turnsUntilAttack = attackTurn - ((currentTurn - 1) % attackTurn);
             log.info("적 공격까지 {}턴 남았습니다. (현재 턴: {}, 공격 주기: {})",
                     turnsUntilAttack, currentTurn, attackTurn);
         }
