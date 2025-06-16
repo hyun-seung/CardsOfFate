@@ -1,11 +1,12 @@
 package com.sp.cof.service;
 
+import com.sp.cof.common.Constant;
+import com.sp.cof.domain.enemy.EnemyInfo;
 import com.sp.cof.domain.game.GameState;
 import com.sp.cof.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -97,6 +98,65 @@ class EnemyServiceTest {
     void applyDamageToEnemy_NullGameState_ThrowsException() {
         // when & then
         assertThatThrownBy(() -> enemyService.applyDamageToEnemy(null, 10))
+                .isInstanceOf(BusinessException.class);
+    }
+
+    @Test
+    @DisplayName("적 처치 시 다음 라운드로 정상적으로 진행한다")
+    void handleEnemyDefeat_Success() {
+        // given
+        int originalRound = gameState.getCurrentRound();
+        // 턴을 여러 번 증가시켜 1이 아닌 상태로 만듦
+        gameState.incremnetTurn();
+        gameState.incremnetTurn();
+        gameState.incremnetTurn();
+        assertThat(gameState.getCurrentTurn()).isNotEqualTo(1); // 전제 조건 확인
+
+        // when
+        enemyService.handleEnemyDefeat(gameState);
+
+        // then
+        assertThat(gameState.getCurrentRound()).isEqualTo(originalRound + 1);
+        assertThat(gameState.getCurrentTurn()).isEqualTo(1); // 턴이 리셋됨
+        assertThat(gameState.getEnemyHp()).isGreaterThan(0); // 새로운 적의 체력 설정됨
+    }
+
+    @Test
+    @DisplayName("라운드 1에서 라운드 2로 진행할 때 적절한 적이 설정된다")
+    void handleEnemyDefeat_Round1ToRound2() {
+        // given
+        assertThat(gameState.getCurrentRound()).isEqualTo(1); // 초기 라운드 확인
+
+        // when
+        enemyService.handleEnemyDefeat(gameState);
+
+        // then
+        assertThat(gameState.getCurrentRound()).isEqualTo(2);
+        EnemyInfo expectedEnemy = EnemyInfo.ofRound(2);
+        assertThat(gameState.getEnemyHp()).isEqualTo(expectedEnemy.getHp());
+    }
+
+    @Test
+    @DisplayName("적 처치 시 버리기 횟수도 리셋된다")
+    void handleEnemyDefeat_DiscardReset() {
+        // given
+        gameState.useDiscard(); // 버리기 사용
+        gameState.useDiscard(); // 버리기 사용
+        int originalDiscardRemaining = gameState.getDiscardRemainingThisRound();
+        assertThat(originalDiscardRemaining).isLessThan(Constant.MAX_DISCARD_PER_ROUND);
+
+        // when
+        enemyService.handleEnemyDefeat(gameState);
+
+        // then
+        assertThat(gameState.getDiscardRemainingThisRound()).isEqualTo(Constant.MAX_DISCARD_PER_ROUND);
+    }
+
+    @Test
+    @DisplayName("handleEnemyDefeat에서 GameState가 null일 때 예외를 발생시킨다")
+    void handleEnemyDefeat_NullGameState_ThrowsException() {
+        // when & then
+        assertThatThrownBy(() -> enemyService.handleEnemyDefeat(null))
                 .isInstanceOf(BusinessException.class);
     }
 }
